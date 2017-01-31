@@ -61,6 +61,7 @@ execute `make install` and `codeRunner` will be installed under
 
 TODO
 -----
+[ ] use libreadline to make input more convienent
 [ ] user can choose a custom compiler
 [x] user can choose a custom code template
 [ ] support other languages such as c++

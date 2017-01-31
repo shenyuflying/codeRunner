@@ -35,7 +35,17 @@ The default template provided by codeRunner is rather simple,
 and it may missing some headers. So you can use `--template=template.c`
 to specify `template.c` as your code template.
 
-			$$yourCode$$
+```c
+/* c code template for codeRunner */
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+        $$yourCode$$
+        return 0;
+}
+```
 
 will be replaced by your code typed by codeRunner. Make sure it is 
 in a single line.

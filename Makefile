@@ -6,3 +6,5 @@ clean:
 	-rm codeRunner
 test:
 	./test.sh
+install:main
+	install codeRunner /usr/local/bin/

@@ -117,8 +117,7 @@ void usage()
 		   "       --no-prompt              do not show prompt for the user\n"
 		   "       --template=templatefile  use templatefile as the code template\n"
 		   "       --help                   show this help\n"
-		   "contact shenyufly@163.com for bugs or support.\n"
-		   "Shen Yu 2017\n"
+		   "contact shenyufly@163.com for bugs or support. Shen Yu 2017\n"
 		  );
 }
 /*

@@ -69,15 +69,27 @@ in a single line.
 
 INSTALL
 ---------
-you should install `gcc` in advance to compile the source code.
-execute `make` to generate the program `codeRunner`
-execute `make install` and `codeRunner` will be installed under
-`/usr/local/bin/`
+### requirements
+1. you should have `gcc` installed to compile the source code.
+```
+sudo apt install gcc
+```
+2. you should have `libreadline` installed to do auto-complete
+```
+sudo apt install libreadline6-dev
+```
+
+### compile from source
+1. execute `make` to generate the program `codeRunner`
+if you donot have readline installed use `make no-readline` instead
+
+2. execute `make install` and `codeRunner` will be installed under
+`/usr/local/bin/` by default.
 
 
 TODO
 -----
-[ ] use libreadline to make input more convienent
+[x] use libreadline to make input more convienent
 [ ] user can choose a custom compiler
 [x] user can choose a custom code template
 [ ] support other languages such as c++

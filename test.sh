@@ -1,11 +1,12 @@
 #!/bin/sh
 
 PROG="./codeRunner"
+ARGS="--no-prompt --no-readline"
 
 ##########################
 ##     test case 1
 ##########################
-$PROG  --no-prompt > output/case1.out <<EOF
+$PROG  $ARGS  > output/case1.out <<EOF
 /* 9x9 multiplication tables */
 int i,j;
 for (i=1;i<=9;i++)
@@ -34,7 +35,7 @@ fi
 ##########################
 ##     test case 1
 ##########################
-$PROG  --no-prompt > output/case2.out <<EOF
+$PROG  $ARGS > output/case2.out <<EOF
 int i,j,k;
 printf("\n");
 for(i=1;i<5;i++)

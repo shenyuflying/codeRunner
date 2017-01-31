@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 
 /*
  * codeRunner: run c code as an interpreted language such as python...
@@ -51,6 +56,7 @@ char    compileInfo[BUFLEN] = {0};
 bool noPrompt = false;
 bool debug = false;
 char *template=NULL;
+bool noReadline = false;
 /* buffers */
 char *newCodeBuffer = NULL;
 char *oldCodeBuffer = NULL;
@@ -121,6 +127,7 @@ void usage()
 		   "usage: codeRunner [options]\n"
 		   "options:\n"
 		   "       --no-prompt              do not show prompt for the user\n"
+		   "       --no-readline            do not use readline\n"
 		   "       --template=templatefile  use templatefile as the code template\n"
 		   "       --version                show version info\n"
 		   "       --help                   show this help\n"
@@ -176,10 +183,35 @@ CmdType GetOneLine()
 	bool isSemicolonEnded = false;
 	bool hasLeftBranket = false;
 	bool hasRightBranket = false;
+	char promptStr[BUFLEN] = {0};
+	char *line = NULL;
 
 	CmdType type = CMD_BAD;
 
+
+#ifdef READLINE
+	if (!noReadline)
+	{
+		if (!noPrompt)
+			sprintf(promptStr, "codeRunner:#%3d> ", lineNo);
+		line = readline(promptStr);
+		tempLineBuffer = calloc(sizeof(char), strlen(line)+2);
+		memcpy(tempLineBuffer, line, strlen(line)*sizeof(char));
+		tempLineBuffer[strlen(line)] = '\n';
+		numRead = strlen(line)+1; /* we add a \n */
+		add_history (line);
+	}
+	else
+	{
+		if (!noPrompt)
+			printf("codeRunner:#%3d> ", lineNo);
+		numRead = getline(&tempLineBuffer,&n,stdin);
+	}
+#else
+	if (!noPrompt)
+		printf("codeRunner:#%3d> ", lineNo);
 	numRead = getline(&tempLineBuffer,&n,stdin);
+#endif
 
 	/* parse the user input line */
 	for (i = numRead - 2; i >= 0; i--)
@@ -404,6 +436,10 @@ int main(int argc, char *argv[])
 		{
 			noPrompt = true;
 		}
+		if (strcmp(argv[argc],"--no-readline") == 0)
+		{
+			noReadline = true;
+		}
 		if (strstr(argv[argc],"--template="))
 		{
 			template = strdup(&argv[argc][11]);
@@ -428,7 +464,6 @@ int main(int argc, char *argv[])
 	{
 		CmdType type;
 
-		PrintPrompt();
 
 		type = GetOneLine();
 

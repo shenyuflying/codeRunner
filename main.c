@@ -271,8 +271,6 @@ void GenerateCode()
 			{
 				strcat(codeBody, line);
 			}
-
-			free(line);
 		}
 
 		fclose(templateFp);

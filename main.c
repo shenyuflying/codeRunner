@@ -36,11 +36,12 @@
  *
  */
 
-//#define DEBUG
 #define bool int
 #define true 1
 #define false 0
 #define BUFLEN 1024
+#define VER  "1.0"
+char    compileInfo[BUFLEN] = {0};
 
 /*
  * global variables
@@ -109,6 +110,11 @@ void help()
 	printf("\"help\" \"h\" show the help\n");
 }
 
+void version()
+{
+	printf("codeRunner: version %s compiled on %s %s\n", VER, __DATE__, __TIME__);
+}
+
 void usage()
 {
 	printf("codeRunner: run c code as an interpreted language\n\n"
@@ -116,6 +122,7 @@ void usage()
 		   "options:\n"
 		   "       --no-prompt              do not show prompt for the user\n"
 		   "       --template=templatefile  use templatefile as the code template\n"
+		   "       --version                show version info\n"
 		   "       --help                   show this help\n"
 		   "contact shenyufly@163.com for bugs or support. Shen Yu 2017\n"
 		  );
@@ -410,6 +417,11 @@ int main(int argc, char *argv[])
 		if (strcmp(argv[argc],"--help") == 0)
 		{
 			usage();
+			exit(0);
+		}
+		if (strcmp(argv[argc],"--version") == 0)
+		{
+			version();
 			exit(0);
 		}
 	}

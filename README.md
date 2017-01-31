@@ -11,13 +11,15 @@ A quick guide
 1) enter c code and codeRunner will compile and run your code
 
            codeRunner:#1> int a = 100;
-           codeRunner:#2> printf("%d\n",a);
+   whenever this line of code has output, it will print on the screen
+
+           codeRunner:#2> printf("%d\n",a++);
            100
 
    after that you can enter another line of c code
   
-           codeRunner:#3> printf("a=%d\n",a);
-           a=100
+           codeRunner:#3> printf("%d\n",a);
+           a=101
 
 2) if your code failed to compile, such as
 
@@ -27,7 +29,21 @@ A quick guide
    you can enter again your code
 
            codeRunner:#2> printf("%d\n",a);
-           100
+           101
+
+Examples
+----------
+### one line code
+![](http://shenyu.wiki/uploads/codeRunner-eg1.gif)
+
+### multi line code
+![](http://shenyu.wiki/uploads/codeRunner-eg2.gif)
+
+### a complex example
+![](http://shenyu.wiki/uploads/codeRunner-eg3.gif)
+
+### error hint
+![](http://shenyu.wiki/uploads/codeRunner-eg4.gif)
 
 Use your own template
 ---------------------
@@ -68,4 +84,5 @@ TODO
 [ ] support functions
 
 
+report bugs to shenyufly@163.com
 yshen 2017

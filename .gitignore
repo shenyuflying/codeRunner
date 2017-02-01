@@ -1,9 +1,9 @@
-codeRunner
+*.o
+test/output/
 core
 cscope.in.out
 cscope.out
 cscope.po.out
-output/
 tags
 tags.vim
 

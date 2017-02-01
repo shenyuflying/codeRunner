@@ -140,15 +140,6 @@ void usage()
 		   "contact shenyufly@163.com for bugs or support. Shen Yu 2017\n"
 		  );
 }
-/*
- * PrintPrompt(): print the prompt on the screen to hint the user
- * of current program status.
- */
-void PrintPrompt()
-{
-	if (!noPrompt)
-		printf("codeRunner:#%d> ",lineNo);
-}
 
 /*
  * init all the buffers: alloc mem

@@ -1,13 +1,16 @@
-all:main
+.PHONY: clean
 
-main:main.c
-	gcc -DREADLINE -g -O0 main.c -o codeRunner -lreadline
+CC = gcc
+all:codeRunner
+
+codeRunner:./src/main.c
+	$(CC) -DREADLINE -g -O0 ./src/main.c -o ./bin/codeRunner -lreadline
 
 no-readline:
-	gcc -g -O0 main.c -o codeRunner
+	$(CC) -g -O0 ./src/main.c -o ./bin/codeRunner
 clean:
-	-rm codeRunner
-test:
+	-rm ./bin/codeRunner
+test:codeRunner
 	./test.sh
-install:main
-	install codeRunner /usr/local/bin/
+install:codeRunner
+	install ./bin/codeRunner /usr/local/bin/

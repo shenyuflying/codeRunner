@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,11 +40,11 @@
  *
  */
 
+#define VER  "1.0"
 #define bool int
 #define true 1
 #define false 0
 #define BUFLEN 1024
-#define VER  "1.0"
 char    compileInfo[BUFLEN] = {0};
 
 /*
@@ -55,7 +54,7 @@ char    compileInfo[BUFLEN] = {0};
 /* options */
 bool noPrompt = false;
 bool debug = false;
-char *template=NULL;
+char *template = NULL;
 bool noReadline = false;
 /* buffers */
 char *newCodeBuffer = NULL;
@@ -149,12 +148,12 @@ void PrintPrompt()
  */
 void InitBuffers()
 {
-	newCodeBuffer = calloc(BUFLEN,sizeof(char));
-	oldCodeBuffer = calloc(BUFLEN,sizeof(char));
-	newOutputBuffer = calloc(BUFLEN,sizeof(char));
-	oldOutputBuffer = calloc(BUFLEN,sizeof(char));
-	codeBody = calloc(BUFLEN,sizeof(char));
-	actualOutputBuffer = calloc(BUFLEN,sizeof(char));
+	newCodeBuffer = calloc(BUFLEN, sizeof(char));
+	oldCodeBuffer = calloc(BUFLEN, sizeof(char));
+	newOutputBuffer = calloc(BUFLEN, sizeof(char));
+	oldOutputBuffer = calloc(BUFLEN, sizeof(char));
+	codeBody = calloc(BUFLEN, sizeof(char));
+	actualOutputBuffer = calloc(BUFLEN, sizeof(char));
 	lineNo = 1;
 }
 
@@ -216,9 +215,9 @@ CmdType GetOneLine()
 	/* parse the user input line */
 	for (i = numRead - 2; i >= 0; i--)
 	{
-		if (tempLineBuffer[i]=='{')
+		if (tempLineBuffer[i] == '{')
 			hasLeftBranket = true;
-		if (tempLineBuffer[i]=='}')
+		if (tempLineBuffer[i] == '}')
 			hasRightBranket = true;
 		if (!isalnum(tempLineBuffer[i]))
 		{
@@ -227,19 +226,19 @@ CmdType GetOneLine()
 		}
 	}
 
-	isSemicolonEnded = tempLineBuffer[numRead-2] == ';' ? true : false;
- 
-	if (!hasSpecials && strncmp(tempLineBuffer,"l",1) == 0)
+	isSemicolonEnded = tempLineBuffer[numRead - 2] == ';' ? true : false;
+
+	if (!hasSpecials && strncmp(tempLineBuffer, "l", 1) == 0)
 		type = CMD_LIST;
-	else if (!hasSpecials && strncmp(tempLineBuffer,"q",1) == 0)
+	else if (!hasSpecials && strncmp(tempLineBuffer, "q", 1) == 0)
 		type = CMD_QUIT;
-	else if (!hasSpecials && strncmp(tempLineBuffer,"e",1) == 0)
+	else if (!hasSpecials && strncmp(tempLineBuffer, "e", 1) == 0)
 		type = CMD_QUIT;
-	else if (!hasSpecials && strncmp(tempLineBuffer,"c",1) == 0)
+	else if (!hasSpecials && strncmp(tempLineBuffer, "c", 1) == 0)
 		type = CMD_CLEAR;
-	else if (!hasSpecials && strncmp(tempLineBuffer,"p",1) == 0)
+	else if (!hasSpecials && strncmp(tempLineBuffer, "p", 1) == 0)
 		type = CMD_PRINT;
-	else if (!hasSpecials && strncmp(tempLineBuffer,"h",1) == 0)
+	else if (!hasSpecials && strncmp(tempLineBuffer, "h", 1) == 0)
 		type = CMD_HELP;
 	else if (hasLeftBranket)
 		type = CODE_BLOCK_START;
@@ -253,7 +252,7 @@ CmdType GetOneLine()
 		type = CMD_BAD;
 
 	if (debug)
-		printf("GetOneLine:%stype=%d\n",tempLineBuffer,type);
+		printf("GetOneLine:%stype=%d\n", tempLineBuffer, type);
 
 	return type;
 }
@@ -293,7 +292,7 @@ void GenerateCode()
 
 		templateFp = fopen(template, "r");
 
-		while(0 < (nRead = getline(&line, &n, templateFp)))
+		while (0 < (nRead = getline(&line, &n, templateFp)))
 		{
 			if (strstr(line, "$$yourCode$$"))
 			{
@@ -307,7 +306,7 @@ void GenerateCode()
 
 		fclose(templateFp);
 	}
-	
+
 	/* now write to file */
 	fp = fopen(fileName, "w");
 	if (fp == NULL)
@@ -321,7 +320,7 @@ void GenerateCode()
 
 
 	if (debug)
-		printf("GenerateCode:\n%s",codeBody);
+		printf("GenerateCode:\n%s", codeBody);
 
 }
 
@@ -332,9 +331,10 @@ bool DoCompile()
 
 	/* compile the file using gcc */
 	char cmd[BUFLEN]={0};
+	int ret;
 
 	sprintf(cmd, "gcc %s -o %s", fileName, progName);
-	int ret = system(cmd);
+	ret = system(cmd);
 
 	if (ret != 0)
 	{
@@ -349,7 +349,7 @@ bool DoCompile()
 	return true;
 }
 /*
- * DoExecute: 
+ * DoExecute:
  * 		open a pipe and execute the program
  * 		save the ret in a buffer
  */
@@ -362,12 +362,12 @@ void DoExecute()
 
 	sprintf(cmd, "./%s", progName);
 
-	fp = popen(cmd,"r");
+	fp = popen(cmd, "r");
 	if (fp == NULL)
 		die("cannot execute the program\n");
 
 	memset(newOutputBuffer, 0, sizeof(char)*BUFLEN);
-	while(pos < BUFLEN && (nRead = fread(newOutputBuffer + (pos++), sizeof(char), 1, fp)));
+	while (pos < BUFLEN && (nRead = fread(newOutputBuffer + (pos++), sizeof(char), 1, fp)));
 
 
 	if (pos == BUFLEN - 1)
@@ -385,23 +385,23 @@ void DoExecute()
 void DoOutput()
 {
 
-	int i=0;
-	int pos=0;
-	int ch=0;
+	int i = 0;
+	int pos = 0;
+	int ch = 0;
 	/* we have some thing to print on the screen */
 	if (memcmp(newOutputBuffer, oldOutputBuffer, sizeof(char)*BUFLEN) != 0)
 	{
 		/* just print the difference */
-		while(newOutputBuffer[i] == oldOutputBuffer[i])
+		while (newOutputBuffer[i] == oldOutputBuffer[i])
 				i++;
-	
+
 		memset(actualOutputBuffer, 0, sizeof(char)*BUFLEN);
-	
-		while('\0'!=(ch=newOutputBuffer[i++]))
+
+		while ('\0' != (ch = newOutputBuffer[i++]))
 			actualOutputBuffer[pos++]=ch;
-	
-		printf("%s",actualOutputBuffer);
-	
+
+		printf("%s", actualOutputBuffer);
+
 		memcpy(oldOutputBuffer, newOutputBuffer, sizeof(char)*BUFLEN);
 	}
 }
@@ -417,7 +417,7 @@ void DoOutput()
  *                  2.1) we may have to add all the c header files in the
  *                       first place. this is the easiest way to handle
  *                       compile error.
- *              3) DoCompile(): compile the code using gcc 
+ *              3) DoCompile(): compile the code using gcc
  *              	3.1) if there is a compile error, this line is abandoned
  *              	     goto step (1)
  *              	3.2) if compile success, [old code buffer] = [new code buffer]
@@ -427,10 +427,10 @@ void DoOutput()
  */
 int main(int argc, char *argv[])
 {
-	int BlockLevel=0;
+	int BlockLevel = 0;
 
 	/* process arguments */
-	while(argc--)
+	while (argc--)
 	{
 		if (strcmp(argv[argc],"--no-prompt") == 0)
 		{
@@ -440,34 +440,34 @@ int main(int argc, char *argv[])
 		{
 			noReadline = true;
 		}
-		if (strstr(argv[argc],"--template="))
+		if (strstr(argv[argc], "--template="))
 		{
 			template = strdup(&argv[argc][11]);
 		}
-		if (strcmp(argv[argc],"--debug") == 0)
+		if (strcmp(argv[argc], "--debug") == 0)
 		{
 			debug = true;
 		}
-		if (strcmp(argv[argc],"--help") == 0)
+		if (strcmp(argv[argc], "--help") == 0)
 		{
 			usage();
 			exit(0);
 		}
-		if (strcmp(argv[argc],"--version") == 0)
+		if (strcmp(argv[argc], "--version") == 0)
 		{
 			version();
 			exit(0);
 		}
 	}
 	InitBuffers();
-	while(1)
+	while (1)
 	{
 		CmdType type;
 
 
 		type = GetOneLine();
 
-		switch(type)
+		switch (type)
 		{
 			case CODE_BLOCK_END:
 				BlockLevel--;
@@ -475,11 +475,11 @@ int main(int argc, char *argv[])
 
 				strcat(newCodeBuffer, tempLineBuffer);
 				free(tempLineBuffer);
-	
+
 				if (BlockLevel == 0)
 				{
 					GenerateCode();
-		
+
 					if (DoCompile())
 					{
 						DoExecute();
@@ -502,14 +502,14 @@ int main(int argc, char *argv[])
 				free(tempLineBuffer);
 				break;
 			case CMD_LIST:
-				printf("%s",oldCodeBuffer);
+				printf("%s", oldCodeBuffer);
 				break;
 			case CMD_PRINT:
-				printf("%s",oldOutputBuffer);
+				printf("%s", oldOutputBuffer);
 				break;
 			case CMD_CLEAR:
 				FreeBuffers();
-				InitBuffers();	
+				InitBuffers();
 				break;
 			case CMD_HELP:
 				help();

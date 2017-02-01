@@ -105,6 +105,13 @@ void die(char *errMsg)
 	abort();
 }
 
+void safe_free(void *p)
+{
+	if (p != NULL)
+		free(p);
+	p = NULL;
+}
+
 void help()
 {
 	printf("\"list\" \"l\" list the c code buffer\n");
@@ -159,12 +166,12 @@ void InitBuffers()
 
 void FreeBuffers()
 {
-	free(newCodeBuffer);
-	free(oldCodeBuffer);
-	free(newOutputBuffer);
-	free(oldOutputBuffer);
-	free(codeBody);
-	free(actualOutputBuffer);
+	safe_free(newCodeBuffer);
+	safe_free(oldCodeBuffer);
+	safe_free(newOutputBuffer);
+	safe_free(oldOutputBuffer);
+	safe_free(codeBody);
+	safe_free(actualOutputBuffer);
 }
 
 /*
@@ -195,6 +202,8 @@ CmdType GetOneLine()
 			sprintf(promptStr, "codeRunner:#%3d> ", lineNo);
 		line = readline(promptStr);
 		tempLineBuffer = calloc(sizeof(char), strlen(line)+2);
+		if (tempLineBuffer == NULL)
+			die("out of memory");
 		memcpy(tempLineBuffer, line, strlen(line)*sizeof(char));
 		tempLineBuffer[strlen(line)] = '\n';
 		numRead = strlen(line)+1; /* we add a \n */
@@ -211,6 +220,9 @@ CmdType GetOneLine()
 		printf("codeRunner:#%3d> ", lineNo);
 	numRead = getline(&tempLineBuffer,&n,stdin);
 #endif
+	
+	if (strncmp(tempLineBuffer,"\n",1) == 0)
+		return CMD_OTHER;
 
 	/* parse the user input line */
 	for (i = numRead - 2; i >= 0; i--)
@@ -474,7 +486,7 @@ int main(int argc, char *argv[])
 			case CODE:
 
 				strcat(newCodeBuffer, tempLineBuffer);
-				free(tempLineBuffer);
+				safe_free(tempLineBuffer);
 
 				if (BlockLevel == 0)
 				{
@@ -499,7 +511,7 @@ int main(int argc, char *argv[])
 				BlockLevel++;
 			case CODE_CONT:
 				strcat(newCodeBuffer, tempLineBuffer);
-				free(tempLineBuffer);
+				safe_free(tempLineBuffer);
 				break;
 			case CMD_LIST:
 				printf("%s", oldCodeBuffer);
@@ -515,8 +527,12 @@ int main(int argc, char *argv[])
 				help();
 				break;
 			case CMD_QUIT:
+			case CMD_BAD:
 				printf("bye!\n");
 				exit(0);
+				break;
+			case CMD_OTHER:
+				/*do nothing */
 				break;
 
 		}

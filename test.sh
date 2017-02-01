@@ -3,17 +3,17 @@
 #####   regression test for codeRunner
 ########################################
 
-PROG="./codeRunner"
+PROG="./bin/codeRunner"
 ARGS="--no-prompt --no-readline"
-CASES_DIR="./cases"
-EXPECTED_DIR="./expected"
-OUTPUT_DIR="./output"
+CASES_DIR="./test/cases"
+EXPECTED_DIR="./test/expected"
+OUTPUT_DIR="./test/output"
 
 numCases=0
 numCasesOk=0
 numCasesFailed=0
 
-for case in `ls ./cases`
+for case in `ls ./test/cases`
 do
 	echo -n "test $case ... "
 	numCases=`expr $numCases + 1`

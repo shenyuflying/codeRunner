@@ -1,0 +1,35 @@
+#!/bin/sh
+########################################
+#####   regression test for codeRunner
+########################################
+
+PROG="./codeRunner"
+ARGS="--no-prompt --no-readline"
+CASES_DIR="./cases"
+EXPECTED_DIR="./expected"
+OUTPUT_DIR="./output"
+
+numCases=0
+numCasesOk=0
+numCasesFailed=0
+
+for case in `ls ./cases`
+do
+	echo -n "test $case ... "
+	numCases=`expr $numCases + 1`
+	name=`basename $case .c`
+	cat $CASES_DIR/$case | $PROG $ARGS > $OUTPUT_DIR/$name.out
+	diff $OUTPUT_DIR/$name.out $EXPECTED_DIR/$name.out
+	if [ $? -eq 0 ] ; then
+		echo "ok !"
+		numCasesOk=`expr $numCasesOk + 1`
+	else
+		echo "failed!"
+		numCasesFailed=`expr $numCasesFailed + 1`
+	fi
+done
+
+echo "total: $numCases"
+echo "passed: $numCasesOk"
+echo "failed: $numCasesFailed"
+

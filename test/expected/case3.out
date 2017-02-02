@@ -1,0 +1,20 @@
+"list" "l" list the c code buffer
+"clear" "c" clear the c code buffer
+"print" "p" print the old output buffer
+"quit" "q" quit the codeRunner
+"exit" "e" quit the codeRunner
+"help" "h" show the help
+/* test for commands */
+int a;
+hello
+hello
+"list" "l" list the c code buffer
+"clear" "c" clear the c code buffer
+"print" "p" print the old output buffer
+"quit" "q" quit the codeRunner
+"exit" "e" quit the codeRunner
+"help" "h" show the help
+int a;
+hello
+hello
+bye!

@@ -69,6 +69,7 @@ char *progName="yourProg";
 int lineNo = 1;
 
 typedef enum{
+	TYPE_BEGIN,
 	CMD_BAD,
 	CODE,
 	CODE_CONT,
@@ -80,7 +81,39 @@ typedef enum{
 	CMD_PRINT,
 	CMD_OTHER,
 	CMD_HELP,
+	TYPE_END,
 } CmdType;
+
+typedef struct {
+	int code;
+	char *name;
+} TypeInfo;
+
+char *TypeNameOf(CmdType type)
+{
+	static TypeInfo info[] =
+	{
+		{TYPE_BEGIN, "invalid type"},
+		{CMD_BAD,"bad command"},
+		{CODE,"code"},
+		{CODE_CONT,"code continue"},
+		{CODE_BLOCK_START,"code block start"},
+		{CODE_BLOCK_END,"code block end"},
+		{CMD_LIST,"command list"},
+		{CMD_QUIT,"command quit"},
+		{CMD_CLEAR,"command clear"},
+		{CMD_PRINT,"command print"},
+		{CMD_OTHER,"command other"},
+		{CMD_HELP,"command help"},
+		{TYPE_END, "invalid type"},
+	};
+	
+	if (type>=TYPE_END || type<=TYPE_BEGIN)
+		return "invalid type code";
+
+	return info[type].name;
+}
+
 /*
  * function prototypes
  */
@@ -95,6 +128,7 @@ void DoCleaning();
 void help();
 void usage();
 void ListCodeBuffer();
+bool IsCommand(char *cmd, char *line);
 
 /*
  * helper function
@@ -183,7 +217,7 @@ CmdType GetOneLine()
 	char promptStr[BUFLEN] = {0};
 	char *line = NULL;
 
-	CmdType type = CMD_BAD;
+	CmdType type = CODE_CONT;
 
 
 #ifdef READLINE
@@ -231,31 +265,41 @@ CmdType GetOneLine()
 
 	isSemicolonEnded = tempLineBuffer[numRead - 2] == ';' ? true : false;
 
-	if (!hasSpecials && strncmp(tempLineBuffer, "l", 1) == 0)
-		type = CMD_LIST;
-	else if (!hasSpecials && strncmp(tempLineBuffer, "q", 1) == 0)
-		type = CMD_QUIT;
-	else if (!hasSpecials && strncmp(tempLineBuffer, "e", 1) == 0)
-		type = CMD_QUIT;
-	else if (!hasSpecials && strncmp(tempLineBuffer, "c", 1) == 0)
-		type = CMD_CLEAR;
-	else if (!hasSpecials && strncmp(tempLineBuffer, "p", 1) == 0)
-		type = CMD_PRINT;
-	else if (!hasSpecials && strncmp(tempLineBuffer, "h", 1) == 0)
-		type = CMD_HELP;
-	else if (hasLeftBranket)
-		type = CODE_BLOCK_START;
-	else if (hasRightBranket)
-		type = CODE_BLOCK_END;
-	else if (!isSemicolonEnded)
-		type = CODE_CONT;
-	else if (hasSpecials)
-		type = CODE;
-	else
-		type = CMD_BAD;
+	/* Is a command? */
+	if (!hasSpecials)
+	{
+		if (IsCommand("list",tempLineBuffer))
+			type = CMD_LIST;
+		if (IsCommand("quit", tempLineBuffer))
+			type = CMD_QUIT;
+		if (IsCommand("exit", tempLineBuffer))
+			type = CMD_QUIT;
+		if (IsCommand("clear", tempLineBuffer))
+			type = CMD_CLEAR;
+		if (IsCommand("print", tempLineBuffer))
+			type = CMD_PRINT;
+		if (IsCommand("help", tempLineBuffer))
+			type = CMD_HELP;
+
+	}
+	
+	/* not a command , possibly be code */
+	if (type == CODE_CONT)
+	{
+		/* Is a code? */
+		if (hasLeftBranket)
+			type = CODE_BLOCK_START;
+		else if (hasRightBranket)
+			type = CODE_BLOCK_END;
+		else if (!isSemicolonEnded)
+			type = CODE_CONT;
+		else if (hasSpecials)
+			type = CODE;
+	}
+
 
 	if (debug)
-		printf("GetOneLine:%stype=%d\n", tempLineBuffer, type);
+		printf("GetOneLine:%stype %d = %s \n", tempLineBuffer, type, TypeNameOf(type));
 
 	return type;
 }
@@ -324,6 +368,7 @@ void GenerateCode()
 
 	if (debug)
 		printf("GenerateCode:\n%s", codeBody);
+
 
 }
 
@@ -502,7 +547,7 @@ int main(int argc, char *argv[])
 				BlockLevel++;
 			case CODE_CONT:
 				strcat(newCodeBuffer, tempLineBuffer);
-				safe_free(tempLineBuffer);
+				//safe_free(tempLineBuffer);
 				break;
 			case CMD_LIST:
 				printf("%s", oldCodeBuffer);
@@ -535,4 +580,30 @@ void DoCleaning()
 {
 	unlink(fileName);
 	unlink(progName);
+}
+
+bool IsCommand(char *cmd, char *line)
+{
+	int cmd_len = 0, line_len = 0;
+	int i;
+
+	if (cmd == NULL || line == NULL)
+		return false;
+
+
+	cmd_len=strlen(cmd);
+	line_len=strlen(line);
+
+	/* short command, line has one extra \n */
+	if (line_len - 1 == 1 && line[0] == cmd[0])
+		return true;
+
+	/* long command, line has one extra \n */
+	if (cmd_len != line_len - 1)
+		return false;
+	if (strncmp(cmd,line,cmd_len) != 0)
+		return false;
+
+	return true;
+
 }

@@ -1,5 +1,5 @@
 *.o
-test/output/
+output/
 core
 cscope.in.out
 cscope.out

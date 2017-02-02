@@ -10,6 +10,7 @@ no-readline:
 	$(CC) -g -O0 ./src/main.c -o ./bin/codeRunner
 clean:
 	-rm ./bin/codeRunner
+	-rm ./test/output/*
 test:codeRunner
 	./test.sh
 install:codeRunner
